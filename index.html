@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XHR / AJAX</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 1rem;
+        box-sizing: border-box;
+        text-align: center;
+      }
+
+      .button {
+        padding: 0.5rem;
+        background-color: #f4f4f4;
+        border: 5px double gray;
+        border-radius: 0.5rem;
+        font-weight: bolder;
+        cursor: pointer;
+        box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+      }
+
+      .cardDiv {
+        display: flex;
+        background-color: #f4f4f4;
+        margin-bottom: 1rem;
+        border-radius: 1rem;
+        box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+      }
+
+      .cardDiv > img {
+        box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <button id="getusers" class="button">Get Users</button>
+
+    <div id="container"></div>
+  </body>
+  <script>
+    const getusers = document.getElementById('getusers');
+    const container = document.getElementById('container');
+
+    // create event listener
+    getusers.addEventListener('click', getUsers);
+
+    function getUsers() {
+      // create XHR object
+      const xhr = new XMLHttpRequest();
+
+      // #=#=#=#=# open takes these three prameters - method, url/file, async
+      xhr.open('GET', 'https://reqres.in/api/users', true);
+
+      // optional - used of loaders
+      xhr.onprogress = () => {
+        console.log('readystate from  onprogress: ', xhr.readyState);
+      };
+
+      // new style
+      // #=#=#=#=# xhr.onload doesn't run until, it gets ready state
+      xhr.onload = () => {
+        console.log('readystate from onload: ', xhr.readyState);
+
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+
+          getData(data.data);
+        }
+      };
+
+      console.log('readystate: ', xhr.readyState);
+
+      xhr.onerror = () => {
+        console.log('readystate from  onerror: ', xhr.readyState);
+      };
+
+      // old style
+      // xhr.onreadystatechange = () => {
+      //   console.log('readystate from  onreadystatechange: ', xhr.readyState);
+
+      //   if (xhr.readyState === 4 && xhr.status === 200) {
+      //     const data = JSON.parse(xhr.responseText);
+
+      //     getData(data.data);
+      //   }
+      // };
+
+      // #=#=#=#=# on ready state change values on each state
+      // 0: request not initialized
+      // 1: server connection established
+      // 2: request received
+      // 3: processing request
+      // 4: request finished and response is ready
+
+      // send request
+      xhr.send();
+    }
+
+    function getData(data) {
+      // #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=# declarative style
+      // const HTMLdata = data
+      //   ?.map((item) =>
+      //     createUser(
+      //       item.id,
+      //       item.email,
+      //       item.first_name,
+      //       item.last_name,
+      //       item.avatar
+      //     )
+      //   )
+      //   .join('');
+      // container.innerHTML = HTMLdata;
+
+      // #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=# imperative style
+      container.innerHTML = null;
+
+      data?.forEach((item) =>
+        container.append(
+          createUser(
+            item.id,
+            item.email,
+            item.first_name,
+            item.last_name,
+            item.avatar
+          )
+        )
+      );
+    }
+
+    // #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=# declarative style
+    // function createUser(id, email, first_name, last_name, avatar) {
+    //   const cardDiv = `
+    //   <div class="cardDiv">
+    //     <img src=${avatar} alt=${id} />
+
+    //     <div>
+    //       <h3>${first_name} ${last_name}</h3>
+
+    //       <h5>${email}</h5>
+
+    //       <button class="button">Click Me</button>
+    //     </div>
+    //   </div>`;
+
+    //   return cardDiv;
+    // }
+
+    // #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=# imperative style
+    function createUser(id, email, first_name, last_name, avatar) {
+      const cardDiv = document.createElement('div');
+      cardDiv.setAttribute('class', 'cardDiv');
+
+      const img = document.createElement('img');
+      img.setAttribute('src', avatar);
+
+      const contentDiv = document.createElement('div');
+
+      const fullName = document.createElement('h3');
+      fullName.innerText = `${first_name} ${last_name}`;
+
+      const emailx = document.createElement('h5');
+      emailx.innerText = `${email}`;
+
+      const button = document.createElement('button');
+      button.innerText = 'Click Me';
+      button.setAttribute('class', 'button');
+      button.addEventListener('click', () => {
+        alert(`गढ़ो के लिए टुकडो के लिए लड़ै अब बस ...
+        जो कुछ भी मेरी आँखों के सामने है, वो सब मुझे चाहिए ...`);
+      });
+
+      contentDiv.append(fullName, emailx, button);
+
+      cardDiv.append(img, contentDiv);
+
+      return cardDiv;
+    }
+  </script>
+</html>
